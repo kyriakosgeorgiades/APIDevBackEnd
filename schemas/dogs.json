@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "dog": {
+      "id": "/dog",
+      "title": "Dog",
+      "description": "A dog in the website",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the new dog!",
+          "type": "string"
+        },
+        "breed": {
+          "description": "What breed is the dog?",
+          "type": "string"
+        },
+        "sex": {
+          "description": "What sex is the dog?",
+          "type": "string"
+        },
+        "imageURL": {
+          "description": "URL for main image to show the dog",
+          "type": "uri",
+          "format": "uri"
+        },
+        "age": {
+          "description": "Age of the dog?",
+          "type": "integer"
+        },
+        "description": {
+          "description": "Optional small description on the dog.",
+          "type": "string"
+        },
+        "shelterID": {
+          "description": "Shelter ID of the which the dog is located.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "sex",
+        "breed"
+      ],
+      "additionalProperties": false
+    },
+    "dogView": {
+      "$id": "#dogView",
+      "title": "Dog View",
+      "description": "Data visible to everyone",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Dog name",
+          "type": "string"
+        },
+        "breed": {
+          "description": "Breed of the dog",
+          "type": "string"
+        },
+        "age": {
+          "description": "Age of the dog",
+          "type": "integer"
+        },
+        "description": {
+          "description": "About the dog",
+          "type": "string"
+        },
+        "imgURL": {
+          "description": "URL of dog image",
+          "type": "uri",
+          "format": "uri"
+        }
+      }
+    },
+    "dogCreated": {
+      "$id": "#dogCreated",
+      "title": "Dog Creation",
+      "description": "Confirmation of a successful dog creation",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated dog record",
+          "type": "integer"
+        },
+        "created": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "Path to retrieve dog record",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "dogUpdated": {
+      "$id": "#dogUpdated",
+      "title": "Dog Updated",
+      "description": "Confirmation of a dog update",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated dog record",
+          "type": "integer"
+        },
+        "updated": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "Path to retrieve dog record",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "dogUpdate": {
+      "$id": "#dogUpdate",
+      "title": "Dog Update",
+      "description": "Confirmation of a successful dog update",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Dog name",
+          "type": "string"
+        },
+        "breed": {
+          "description": "Breed of the dog",
+          "type": "string"
+        },
+        "age": {
+          "description": "Age of the dog",
+          "type": "integer"
+        },
+        "description": {
+          "description": "About the dog",
+          "type": "string"
+        },
+        "imgURL": {
+          "description": "URL of dog image",
+          "type": "uri",
+          "format": "uri"
+        }
+      }
+    },
+    "dogsList": {
+      "$id": "#dogsList",
+      "title": "Dogs List",
+      "description": "List of all the dogs",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/dogView"
+      }
+    },
+    "dogDeleted": {
+      "$id": "#dogDeleted",
+      "title": "Dog Deleted",
+      "description": "Confirmation of a successful deletion",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated dog record",
+          "type": "integer"
+        },
+        "deleted": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

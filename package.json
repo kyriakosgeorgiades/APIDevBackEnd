@@ -1,0 +1,55 @@
+{
+  "name": "dogs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cross-env DB_DATABASE=test_db npx jest --testTimeout=10000",
+    "test:watch": "cross-env DB_DATABASE=test_db npx jest --watch",
+    "testDB:drop": "mysql --user=root --password=codio -e 'DROP DATABASE test_db;'",
+    "testDB:create": "mysql --user=root --password=codio -e 'CREATE DATABASE test_db;'",
+    "testDB:migrate": "mysqldump --user=root --password=codio coursework | mysql --user=root --password=codio test_db",
+    "pretest": "npm run testDB:drop && npm run testDB:create && npm run testDB:migrate",
+    "dev": "nodemon index.js",
+    "lint": "./node_modules/.bin/eslint",
+    "knex": "knex"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "bcrypt": "^5.0.1",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "etag": "^1.8.1",
+    "fs": "^0.0.1-security",
+    "jsdoc": "^3.6.6",
+    "jsonschema": "^1.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.21.17",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-passport": "^4.1.4",
+    "koa-router": "^9.4.0",
+    "mime-types": "^2.1.28",
+    "passport-http": "^0.3.0",
+    "passport-jwt": "^4.0.0",
+    "promise-mysql": "^5.0.2",
+    "promisepipe": "^3.0.0",
+    "redoc": "^2.0.0-rc.53",
+    "role-acl": "^4.5.4",
+    "supertest": "^6.1.3",
+    "utf8": "^3.0.0",
+    "uuid": "^8.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}

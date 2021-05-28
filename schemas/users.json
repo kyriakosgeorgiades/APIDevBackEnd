@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "user": {
+      "id": "/user",
+      "title": "User",
+      "description": "A registered user of the website",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "username": {
+          "description": "Unique username",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "password": {
+          "description": "Password for registration",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string",
+          "format": "email"
+        },
+        "code": {
+          "description": "Code registration for employees",
+          "type": "string"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "username",
+        "email",
+        "password",
+        "firstName",
+        "lastName"
+      ],
+      "additionalProperties": false
+    },
+    "userView": {
+      "$id": "#userView",
+      "title": "User View",
+      "description": "Data visible to users and workers (excludes password).",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string",
+          "format": "email"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "string"
+        },
+        "username": {
+          "description": "Unique username",
+          "type": "string"
+        }
+      }
+    },
+    "userUpdate": {
+      "$id": "#userUpdate",
+      "title": "User Update",
+      "description": "Data a user can update (excludes username).",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string",
+          "format": "email"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "string",
+          "format": "uri"
+        },
+        "password": {
+          "description": "Password for registration",
+          "type": "string",
+          "minLength": 3
+        }
+      },
+      "additionalProperties": false
+    },
+    "userList": {
+      "$id": "#userList",
+      "title": "User List",
+      "description": "List of all users visible to worker only.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/userView"
+      }
+    },
+    "userUpdated": {
+      "$id": "#userUpdated",
+      "title": "User Updated",
+      "description": "Confirmation of a successful user update/creation",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated user record",
+          "type": "integer"
+        },
+        "updated": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "role": {
+          "description": "Role of the user",
+          "type": "string"
+        },
+        "link": {
+          "description": "Path to retrieve user record",
+          "type": "string",
+          "format": "uri"
+        },
+        "token": {
+          "description": "JWT of the user",
+          "type": "string"
+        },
+        "expiresIn": {
+          "description": "Expiration of the JWT",
+          "type": "integer"
+        }
+      }
+    },
+    "userDeleted": {
+      "$id": "#userDeleted",
+      "title": "User Deleted",
+      "description": "Confirmation of a successful deletion",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated user record",
+          "type": "integer"
+        },
+        "deleted": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "favourites": {
+      "id": "/favourites",
+      "title": "Favourites",
+      "description": "Favourites dog of the user",
+      "type": "object",
+      "properties": {
+        "userID": {
+          "description": "ID of the user adding a dog",
+          "type": "integer"
+        },
+        "dogID": {
+          "description": "ID of the dog to add to the list",
+          "type": "integer"
+        },
+        "shelterID": {
+          "description": "ID of location of the dog",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "favView": {
+      "$id": "#favView",
+      "title": "Favourite View",
+      "description": "Data visible to user owner of the list",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the dog",
+          "type": "string"
+        },
+        "breed": {
+          "description": "Breed of the dog",
+          "type": "string"
+        },
+        "sex": {
+          "description": "Sex of the dog",
+          "type": "string"
+        },
+        "description": {
+          "description": "About the dog",
+          "type": "string"
+        },
+        "imgURL": {
+          "description": "URL of dog image",
+          "type": "string",
+					"format":"uri"
+        },
+        "location": {
+          "description": "Location of the dog",
+          "type": "string"
+        }
+      }
+    },
+    "userUpdate": {
+      "$id": "#userUpdate",
+      "title": "User Update",
+      "description": "Data a user can update (excludes username).",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string",
+          "format": "email"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "uri",
+          "format": "uri"
+        },
+        "password": {
+          "description": "Password for registration",
+          "type": "string",
+          "minLength": 3
+        }
+      },
+      "additionalProperties": false
+    },
+    "favList": {
+      "$id": "#favList",
+      "title": "User favourite List",
+      "description": "List of all the favourites dog for a user.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/favView"
+      }
+    },
+    "favUpdated": {
+      "$id": "#favUpdated",
+      "title": "Favourite List Updated",
+      "description": "Confirmation of a successful list update",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the dog added to the list",
+          "type": "integer"
+        },
+        "created": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "Path to retrieve dog record",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "favDeleted": {
+      "$id": "#favDeleted",
+      "title": "Dog Deleted",
+      "description": "Confirmation of a successful deletion",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated dog record in favourite list",
+          "type": "integer"
+        },
+        "deleted": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

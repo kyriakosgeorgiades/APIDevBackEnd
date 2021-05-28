@@ -1,0 +1,20 @@
+/* 
+Replace the missing values for the db cinnection
+*/
+
+
+// Export database connection information.
+// Use the environment settings or given defaults.
+const db = require('knex')({
+  client: 'mysql',
+  connection: {
+    host : process.env.DB_HOST || "",
+    user : process.env.DB_USER || '',
+		port: process.env.DB_PORT || 0,
+    password : process.env.DB_PASSWORD || '',
+    database : process.env.DB_DATABASE ||''
+  }
+});
+
+
+module.exports = db;

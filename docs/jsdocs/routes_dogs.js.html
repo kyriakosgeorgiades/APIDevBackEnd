@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: routes/dogs.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: routes/dogs.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * A module for the routes for Dogs.
+ * @module routes/dogs
+ * @author Kyriakos Georgiades
+ */
+const etag = require('etag');
+const Router = require('koa-router');
+const bodyParser = require('koa-bodyparser');
+/** Requiring the models of dogs where all the methods of DB queries are. */
+const model = require('../models/dogs');
+const prefix = '/api/v1/dogs';
+const router = Router({ prefix });
+/** Requiring permissions to allow actions based on roles. */
+const can = require('../permissions/dogs');
+/** Requiring schema validation of dog. */
+const { validateDog } = require('../controllers/validation');
+/** Requiring JWT authorization for requests. */
+const JWT = require('../controllers/authJWT');
+
+async function getById(ctx) {
+  const { id } = ctx.params;
+  const result = await model.getById(id);
+  if (result.length) {
+    const dog = result[0];
+    ctx.body = dog;
+    ctx.set('Last-Modified', new Date(dog.modified).toUTCString());
+    ctx.set('Etag', etag(JSON.stringify(ctx.body)));
+    ctx.status = 200;
+  } else {
+    ctx.status = 404;
+  }
+}
+
+async function searchDog(ctx) {
+  const urlParams = new URLSearchParams(ctx.request.search);
+  let columnFilter;
+  let valueFilter;
+  for (const [key, value] of urlParams) {
+    columnFilter = key;
+    valueFilter = value;
+  }
+  const result = await model.searchDog(columnFilter, valueFilter);
+  if (result.length) {
+    const dog = result;
+    ctx.status = 201;
+    ctx.body = dog;
+  } else {
+    ctx.status = 404;
+  }
+}
+
+async function getAll(ctx) {
+  let { page = 1, limit = 6, fields = null } = ctx.request.query;
+  limit = parseInt(limit, 10);
+  page = parseInt(page, 10);
+  limit = limit > 100 ? 100 : limit;
+  limit = limit &lt; 1 ? 10 : limit;
+  page = page &lt; 1 ? 1 : page;
+  let result = await model.getAll(page, limit);
+  if (result.length) {
+    if (fields !== null) {
+      if (Array.isArray(fields)) {
+        fields = [fields];
+      }
+      result = result.map((record) => {
+        const partial = {};
+        for (const field of fields) {
+          partial[field] = record[field];
+        }
+        return partial;
+      });
+    }
+  }
+  ctx.status = 201;
+  ctx.body = result;
+}
+
+// async function getByName(ctx) {
+//   const name = ctx.params.name;
+//   const result = await model.getByName(name);
+//   if (result.length) {
+//     const dog = result
+//     ctx.body = dog;
+//   }
+// }
+
+async function createDog(ctx) {
+  const permission = can.create(ctx.state.user);
+  if (!permission.granted) {
+    ctx.status = 403;
+  } else {
+    const workerShelterID = ctx.state.user[0].shelterID;
+    const { body } = ctx.request;
+    body.shelterID = workerShelterID;
+    let location;
+    if (workerShelterID === 1) {
+      location = 'Aradippou';
+    }
+    if (workerShelterID === 2) {
+      location = 'Nicosia';
+    }
+    if (workerShelterID === 3) {
+      location = 'Paphos';
+    }
+    if (workerShelterID === 4) {
+      location = 'Limassol';
+    }
+    body.location = location;
+    const result = await model.add(body);
+    if (result != null) {
+      ctx.status = 201;
+      ctx.body = { ID: result, created: true, link: `${ctx.request.path}${result}` };
+    }
+  }
+}
+
+async function updateDog(ctx) {
+  const dogData = await model.getById(ctx.params.id);
+  const dogShelterID = dogData[0].shelterID;
+  const permission = can.update(ctx.state.user, dogShelterID);
+  if (!permission.granted) {
+    ctx.status = 403;
+  } else {
+    const { id } = ctx.params;
+    let result = await model.getById(id); // check it exists
+    if (result.length) {
+      const dog = result[0];
+      // exclude fields that should not be updated
+      const { ID, ...body } = ctx.request.body;
+      Object.assign(dog, body); // overwrite updatable fields with body data
+      result = await model.update(dog);
+      if (result) {
+        ctx.status = 201;
+        ctx.body = { ID: id, updated: true, link: ctx.request.path };
+      } else {
+				ctx.status = 404;
+			}
+    }
+  }
+}
+
+async function deleteDog(ctx) {
+  const { id } = ctx.params;
+  const dogData = await model.getById(id);
+  const dogShelterID = dogData[0].shelterID;
+  const permission = can.delete(ctx.state.user, dogShelterID);
+  if (permission.granted) {
+    const result = await model.delById(id);
+    if (result) {
+      ctx.body = { ID: id, deleted: true };
+      ctx.status = 200;
+    } else {
+			ctx.status = 404;
+		}
+  } else {
+    ctx.status = 403;
+  }
+}
+
+/** GET route to get all dogs. */
+router.get('/', getAll);
+
+/** GET route to get dog by ID. */
+router.get('/:id([0-9]{1,})', getById);
+
+/** GET route to get dog by search result. */
+router.get('/:search', searchDog);
+
+/** POST route to post new dog. */
+router.post('/', bodyParser(), validateDog, JWT, createDog);
+
+// router.get('/:name', getByName);
+/** PUT route to update an already existing dog. */
+router.put('/:id([0-9]{1,})', JWT, bodyParser(), updateDog);
+
+/** DELETE route to delete a single dog. */
+router.del('/:id([0-9]{1,})', JWT, deleteDog);
+
+module.exports = router;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-controllers_authJWT.html">controllers/authJWT</a></li><li><a href="module-controllers_validation.html">controllers/validation</a></li><li><a href="module-helpers_issueJwt.html">helpers/issueJwt</a></li><li><a href="module-helpers_match.html">helpers/match</a></li><li><a href="module-models_dogs.html">models/dogs</a></li><li><a href="module-models_favourites.html">models/favourites</a></li><li><a href="module-models_shelters.html">models/shelters</a></li><li><a href="module-models_users.html">models/users</a></li><li><a href="module-permissions_dogs.html">permissions/dogs</a></li><li><a href="module-permissions_favourites.html">permissions/favourites</a></li><li><a href="module-permissions_users.html">permissions/users</a></li><li><a href="module-routes_dogs.html">routes/dogs</a></li><li><a href="module-routes_favourites.html">routes/favourites</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Apr 20 2021 15:01:00 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
